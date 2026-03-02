@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>โนมิโน่ 4 ผู้เล่น · x ชน x / s ชน n</title>
+    <title>โนมิโน่ 4 ผู้เล่น · x ชน x / s ชน n · ปุ่มประจำตัว</title>
     <style>
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Roboto, sans-serif;
         }
         body {
-            background: linear-gradient(145deg, #2b5a4c 0%, #1d7a5e 100%);
+            background: linear-gradient(145deg, #1e4b3e 0%, #136b4f 100%);
             margin: 0;
             min-height: 100vh;
             display: flex;
@@ -19,18 +19,18 @@
             padding: 16px;
         }
         .game-container {
-            max-width: 1300px;
+            max-width: 1400px;
             width: 100%;
-            background: #f5efe0;
+            background: #efe8d3;
             border-radius: 48px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
             padding: 24px;
-            border: 8px solid #c49a6c;
+            border: 8px solid #b8824e;
         }
         h1 {
             text-align: center;
             margin: 0 0 8px 0;
-            color: #3e2c1b;
+            color: #2f1f0f;
             font-size: 2.5rem;
             font-weight: 800;
             text-shadow: 2px 2px 0 #e9d6b0;
@@ -115,6 +115,19 @@
             box-shadow: 0 10px 0 #3d5a9b, 0 15px 20px rgba(0,0,0,0.4);
             border-color: #1e47b5;
         }
+        .tile.covered {
+            background: #5a5f6b;
+            border-color: #2f3540;
+            box-shadow: 0 8px 0 #2d2f35;
+            color: #c0c7d4;
+            font-size: 2.2rem;
+            justify-content: center;
+            gap: 8px;
+        }
+        .tile.covered .left, .tile.covered .right {
+            border-right: none;
+            color: #dddddd;
+        }
         .tile .left, .tile .right {
             flex: 1;
             text-align: center;
@@ -137,6 +150,8 @@
             background: #eadbbd;
             box-shadow: 0 10px 0 #836e4a, inset 0 2px 10px #fff2d4;
             transition: 0.2s;
+            display: flex;
+            flex-direction: column;
         }
         .hand-card.current-turn {
             border: 8px solid #f5c542;
@@ -168,7 +183,47 @@
             gap: 12px;
             justify-content: center;
             min-height: 90px;
+            margin-bottom: 16px;
         }
+        /* ปุ่มควบคุมภายในมือ */
+        .hand-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 8px;
+        }
+        .hand-controls button {
+            background: #5f4a32;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #3e2e1d;
+            transition: 0.05s linear;
+            border: 1px solid #cfa668;
+            flex: 1 0 auto;
+            min-width: 70px;
+        }
+        .hand-controls button:hover:not(:disabled) {
+            background: #7d5e3f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #3e2e1d;
+        }
+        .hand-controls button:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #3e2e1d;
+        }
+        .hand-controls button:disabled {
+            background: #a7a08a;
+            box-shadow: 0 2px 0 #67604d;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         /* สีพื้นหลังเฉพาะแต่ละผู้เล่น */
         .player-0 .hand-card { background: #fbc3c3; }  /* แดงอ่อน */
         .player-1 .hand-card { background: #b3d9ff; }  /* ฟ้าอ่อน */
@@ -180,14 +235,13 @@
         .player-2.current-turn .hand-card { border-color: #388e3c; }
         .player-3.current-turn .hand-card { border-color: #fbc02d; }
 
-        .controls {
+        .global-controls {
             display: flex;
             gap: 20px;
             justify-content: center;
             margin: 30px 0 20px;
-            flex-wrap: wrap;
         }
-        button {
+        .global-controls button {
             background: #6b4f32;
             border: none;
             color: white;
@@ -196,26 +250,13 @@
             padding: 16px 32px;
             border-radius: 60px;
             cursor: pointer;
-            box-shadow: 0 8px 0 #3e2e1d, 0 6px 16px black;
-            transition: 0.06s linear;
+            box-shadow: 0 8px 0 #3e2e1d;
             border: 2px solid #cfa668;
-            flex: 0 1 auto;
-            min-width: 180px;
         }
-        button:hover:not(:disabled) {
+        .global-controls button:hover {
             background: #7d5e3f;
             transform: translateY(-2px);
-            box-shadow: 0 10px 0 #3e2e1d, 0 8px 18px black;
-        }
-        button:active:not(:disabled) {
-            transform: translateY(4px);
-            box-shadow: 0 4px 0 #3e2e1d, 0 6px 12px black;
-        }
-        button:disabled {
-            background: #a7a08a;
-            box-shadow: 0 4px 0 #67604d;
-            opacity: 0.6;
-            cursor: not-allowed;
+            box-shadow: 0 10px 0 #3e2e1d;
         }
         .reset-btn {
             background: #c9a23b;
@@ -252,7 +293,7 @@
 <body>
 <div class="game-container">
     <h1>🎯 โนมิโน่ 4 ผู้เล่น</h1>
-    <div class="subtitle">⚡ x ชน x เท่านั้น · s ชน n เท่านั้น ⚡</div>
+    <div class="subtitle">⚡ x ชน x · s ชน n · แต่ละคนมีปุ่มของตัวเอง ⚡</div>
 
     <div class="status-bar" id="statusBar">
         <span class="turn-indicator" id="turnDisplay">ตาผู้เล่น 1</span>
@@ -269,16 +310,13 @@
     <!-- มือผู้เล่นทั้ง 4 คน แสดงในกริด 2x2 -->
     <div class="hands-grid" id="handsContainer"></div>
 
-    <!-- ปุ่มควบคุม -->
-    <div class="controls">
-        <button id="rotateBtn" title="หมุนซ้าย-ขวาของไทล์ที่เลือก">🔄 หมุนไทล์</button>
-        <button id="placeHeadBtn" title="วางต่อหัว">⬅️ วางหัว</button>
-        <button id="placeTailBtn" title="วางต่อท้าย">วางท้าย ➡️</button>
+    <!-- ปุ่มรีเซ็ตเกม (กลาง) -->
+    <div class="global-controls">
         <button id="resetBtn" class="reset-btn">🔄 เริ่มเกมใหม่</button>
     </div>
 
     <div class="info-message" id="messageArea">
-        👆 คลิกที่ไทล์ในมือของผู้เล่นปัจจุบันเพื่อเลือก
+        👆 คลิกที่ไทล์ในมือเพื่อเลือก แล้วกดปุ่มในกรอบนั้น
     </div>
 </div>
 
@@ -290,9 +328,6 @@
     const PLAYER_COUNT = 4;
     const INIT_HAND_SIZE = 7;          // แจกคนละ 7 ใบ
     const TILES_PER_PATTERN = 6;        // แต่ละแบบมี 6 ชิ้น -> 6 แบบ *6 = 36 ใบ
-
-    // สีผู้เล่น (ใช้ class)
-    const PLAYER_CLASS = ['player-0', 'player-1', 'player-2', 'player-3'];
 
     // ตรวจสอบว่าสองด้านชนกันได้หรือไม่ (x-x, s-n, n-s)
     function canMatch(a, b) {
@@ -354,7 +389,6 @@
     // ตรวจสอบว่าผู้เล่นที่กำหนดมีไทล์ที่เล่นได้อย่างน้อยหนึ่งใบหรือไม่
     function hasAnyValidMove(player) {
         return hands[player].some(tile => {
-            // ลองทั้งไม่หมุนและหมุน
             return isValidPlacement(tile, board, 'head', false) ||
                    isValidPlacement(tile, board, 'tail', false) ||
                    isValidPlacement(tile, board, 'head', true) ||
@@ -381,39 +415,9 @@
         }
     }
 
-    // เริ่มเทิร์นสำหรับผู้เล่นปัจจุบัน (ตรวจสอบความสามารถในการเล่น, จั่วอัตโนมัติ, ผ่าน)
+    // เริ่มเทิร์นสำหรับผู้เล่นปัจจุบัน (ตอนนี้ไม่มี auto draw)
     function startTurn() {
         if (gameOver) return;
-
-        // เทิร์นแรกถ้ากระดานว่าง ไม่ต้องทำอะไร (รอผู้เล่นเลือกไทล์แรก)
-        if (board.length === 0) {
-            updateUI();
-            return;
-        }
-
-        let actionTaken = false;
-        while (!actionTaken && !gameOver) {
-            if (hasAnyValidMove(currentPlayer)) {
-                break;  // ผู้เล่นมีไทล์ที่เล่นได้ รอคำสั่งจากผู้เล่น
-            } else {
-                // ไม่มีไทล์ที่เล่นได้ในมือ
-                if (stock.length > 0) {
-                    drawTile(currentPlayer);  // จั่ว 1 ใบ แล้ววนตรวจสอบอีกครั้ง
-                } else {
-                    // กองหมด ต้องผ่าน
-                    passCount++;
-                    if (passCount >= PLAYER_COUNT) {
-                        gameOver = true;
-                        determineWinnerFromHands();
-                        updateUI();
-                        return;
-                    }
-                    // เปลี่ยนผู้เล่น
-                    currentPlayer = (currentPlayer + 1) % PLAYER_COUNT;
-                    // ไม่ต้อง reset passCount ที่นี่ เพราะจะเพิ่มเมื่อผ่านอีก
-                }
-            }
-        }
         updateUI();
     }
 
@@ -460,8 +464,55 @@
         // ยังไม่จบ: สลับผู้เล่น, รีเซ็ต passCount
         passCount = 0;
         currentPlayer = (currentPlayer + 1) % PLAYER_COUNT;
-        startTurn();  // ให้ผู้เล่นถัดไปเริ่มเทิร์น (อาจจะจั่วอัตโนมัติ)
+        startTurn();
         return true;
+    }
+
+    // ผู้เล่นขอจั่ว (ไม่เปลี่ยน turn)
+    function handleDraw(player) {
+        if (gameOver) return;
+        if (player !== currentPlayer) {
+            alert('ไม่ใช่ตาของคุณ');
+            return;
+        }
+        if (stock.length === 0) {
+            alert('กองไทล์หมดแล้ว');
+            return;
+        }
+        drawTile(player);
+        // ไม่เปลี่ยน currentPlayer, ไม่เปลี่ยน passCount
+        // รีเซ็ต selected? ควรคงเดิมหรือล้าง? เราจะคงเดิม (ยังเลือกไทล์เดิมอยู่)
+        updateUI();
+    }
+
+    // ผู้เล่นขอผ่าน (เปลี่ยน turn)
+    function handlePass(player) {
+        if (gameOver) return;
+        if (player !== currentPlayer) {
+            alert('ไม่ใช่ตาของคุณ');
+            return;
+        }
+        // ตรวจสอบว่ามีตัววางหรือไม่? ถ้ามีตัววางควรไม่ให้ผ่าน? 
+        // เราจะอนุญาตให้ผ่านได้เสมอ แต่ถ้าผ่านทั้งที่มีตัววางจะเสียเปรียบ
+        // เพื่อความถูกต้อง เราจะเตือนและให้ผ่านได้ แต่จะไม่เพิ่ม passCount? 
+        // ตามกติกาจริงควรผ่านได้เมื่อไม่มีตัววางเท่านั้น
+        // ดังนั้นเราจะปิดปุ่มผ่านเมื่อมีตัววาง แต่ถ้ามาถึงตรงนี้ได้เพราะปุ่ม disable แล้ว 
+        // แต่เผื่อเรียกตรงเราจะตรวจสอบอีกที
+        if (hasAnyValidMove(player)) {
+            alert('คุณยังมีไทล์ที่สามารถวางได้ กรุณาวางหรือหมุนก่อน');
+            return;
+        }
+
+        // เปลี่ยนผู้เล่น
+        currentPlayer = (currentPlayer + 1) % PLAYER_COUNT;
+        passCount++;
+        if (passCount >= PLAYER_COUNT) {
+            gameOver = true;
+            determineWinnerFromHands();
+        }
+        selectedTileIndex = -1;
+        flipped = false;
+        updateUI();
     }
 
     // --------------------------------------------------------------
@@ -496,41 +547,112 @@
             // หัวข้อมือ
             const header = document.createElement('div');
             header.className = 'hand-header';
-            header.innerHTML = `<span class="player-name" style="background: ${p === 0 ? '#b71c1c' : p === 1 ? '#0d47a1' : p === 2 ? '#1b5e20' : '#b26a00'};">👤 ผู้เล่น ${p+1}</span>
+            const nameBg = p === 0 ? '#b71c1c' : p === 1 ? '#0d47a1' : p === 2 ? '#1b5e20' : '#b26a00';
+            header.innerHTML = `<span class="player-name" style="background: ${nameBg};">👤 ผู้เล่น ${p+1}</span>
                                 <span class="flip-badge" style="opacity: ${(isCurrent && selectedTileIndex !== -1 && flipped) ? '1' : '0'};">🔁 หมุน</span>`;
             card.appendChild(header);
 
             // ไทล์ในมือ
             const tilesDiv = document.createElement('div');
             tilesDiv.className = 'hand-tiles';
-            tilesDiv.dataset.player = p;
 
-            hands[p].forEach((tile, idx) => {
-                const tileEl = document.createElement('div');
-                tileEl.className = `tile ${(isCurrent && idx === selectedTileIndex) ? 'selected' : ''}`;
-                tileEl.dataset.index = idx;
-                tileEl.dataset.player = p;
-                tileEl.innerHTML = `<span class="left">${tile.left}</span><span class="right">${tile.right}</span>`;
-                tilesDiv.appendChild(tileEl);
-            });
+            // กำหนดว่าให้แสดงไทล์จริง หรือ cover
+            const showReal = (p === currentPlayer && !gameOver) || gameOver;
 
+            if (showReal) {
+                hands[p].forEach((tile, idx) => {
+                    const tileEl = document.createElement('div');
+                    tileEl.className = `tile ${(isCurrent && idx === selectedTileIndex) ? 'selected' : ''}`;
+                    // ใส่ data เฉพาะเมื่อเป็นตาปัจจุบันและยังไม่จบเกม (เพื่อให้คลิกเลือกได้)
+                    if (isCurrent && !gameOver) {
+                        tileEl.dataset.index = idx;
+                        tileEl.dataset.player = p;
+                    }
+                    tileEl.innerHTML = `<span class="left">${tile.left}</span><span class="right">${tile.right}</span>`;
+                    tilesDiv.appendChild(tileEl);
+                });
+            } else {
+                for (let i = 0; i < hands[p].length; i++) {
+                    const tileEl = document.createElement('div');
+                    tileEl.className = 'tile covered';
+                    tileEl.innerHTML = '<span class="left">❓</span><span class="right">❓</span>';
+                    tilesDiv.appendChild(tileEl);
+                }
+            }
             card.appendChild(tilesDiv);
+
+            // ปุ่มควบคุมเฉพาะผู้เล่นนี้ (จะแสดงเฉพาะเมื่อเป็นตาปัจจุบันและเกมไม่จบ)
+            if (isCurrent && !gameOver) {
+                const controlsDiv = document.createElement('div');
+                controlsDiv.className = 'hand-controls';
+
+                // ปุ่มหมุน
+                const rotateBtn = document.createElement('button');
+                rotateBtn.textContent = '🔄 หมุน';
+                rotateBtn.disabled = (selectedTileIndex === -1);
+                rotateBtn.onclick = () => {
+                    if (selectedTileIndex === -1) {
+                        alert('กรุณาเลือกไทล์ก่อน');
+                        return;
+                    }
+                    flipped = !flipped;
+                    updateUI();
+                };
+
+                // ปุ่มวางหัว
+                const headBtn = document.createElement('button');
+                headBtn.textContent = '⬅️ วางหัว';
+                headBtn.disabled = (selectedTileIndex === -1) || 
+                    !isValidPlacement(hands[p][selectedTileIndex], board, 'head', flipped);
+                headBtn.onclick = () => {
+                    if (selectedTileIndex === -1) return;
+                    placeTile(p, selectedTileIndex, 'head', flipped);
+                };
+
+                // ปุ่มวางท้าย
+                const tailBtn = document.createElement('button');
+                tailBtn.textContent = 'วางท้าย ➡️';
+                tailBtn.disabled = (selectedTileIndex === -1) || 
+                    !isValidPlacement(hands[p][selectedTileIndex], board, 'tail', flipped);
+                tailBtn.onclick = () => {
+                    if (selectedTileIndex === -1) return;
+                    placeTile(p, selectedTileIndex, 'tail', flipped);
+                };
+
+                // ปุ่มจั่ว
+                const drawBtn = document.createElement('button');
+                drawBtn.textContent = '🎲 จั่ว';
+                drawBtn.disabled = (stock.length === 0);
+                drawBtn.onclick = () => handleDraw(p);
+
+                // ปุ่มผ่าน (จะ enable เมื่อไม่มีตัววาง)
+                const passBtn = document.createElement('button');
+                passBtn.textContent = '⏭️ ผ่าน';
+                passBtn.disabled = hasAnyValidMove(p);  // ผ่านได้เมื่อไม่มีตัววาง
+                passBtn.onclick = () => handlePass(p);
+
+                controlsDiv.appendChild(rotateBtn);
+                controlsDiv.appendChild(headBtn);
+                controlsDiv.appendChild(tailBtn);
+                controlsDiv.appendChild(drawBtn);
+                controlsDiv.appendChild(passBtn);
+
+                card.appendChild(controlsDiv);
+            }
+
             playerDiv.appendChild(card);
             container.appendChild(playerDiv);
         }
     }
 
     function updateUI() {
-        // อัปเดตกระดาน
         renderBoard();
-
-        // อัปเดตมือทั้งหมด
         renderHands();
 
-        // แสดงจำนวนไทล์ในกอง
+        // อัปเดตจำนวนกอง
         document.getElementById('stockCount').innerText = `เหลือ ${stock.length}`;
 
-        // แสดงสถานะผู้เล่นปัจจุบัน / จบเกม
+        // แสดงสถานะ
         const turnSpan = document.getElementById('turnDisplay');
         const gameOverSpan = document.getElementById('gameOverDisplay');
         if (!gameOver) {
@@ -555,71 +677,49 @@
         } else if (board.length === 0) {
             msg.innerText = '🪧 วางไทล์แรกได้เลย (เลือกไทล์ในมือ แล้วกดวางหัว/ท้าย)';
         } else if (selectedTileIndex === -1) {
-            msg.innerText = '👆 คลิกที่ไทล์ในมือของผู้เล่นปัจจุบันเพื่อเลือก';
+            msg.innerText = '👆 คลิกที่ไทล์ในมือเพื่อเลือก แล้วกดปุ่มในกรอบ';
         } else {
             const tile = hands[currentPlayer][selectedTileIndex];
-            if (!tile) return;
-            const canHead = isValidPlacement(tile, board, 'head', flipped);
-            const canTail = isValidPlacement(tile, board, 'tail', flipped);
-            if (canHead || canTail) {
-                msg.innerText = `✅ สามารถวางได้: ${canHead ? 'หัว' : ''} ${canTail ? 'ท้าย' : ''}  กดปุ่มวาง`;
-            } else {
-                msg.innerText = '❌ ไทล์นี้วางไม่ได้ในตำแหน่งใด ๆ ลองหมุนหรือเลือกไทล์อื่น';
+            if (tile) {
+                const canHead = isValidPlacement(tile, board, 'head', flipped);
+                const canTail = isValidPlacement(tile, board, 'tail', flipped);
+                if (canHead || canTail) {
+                    msg.innerText = `✅ วางได้: ${canHead ? 'หัว' : ''} ${canTail ? 'ท้าย' : ''}  กดปุ่ม`;
+                } else {
+                    msg.innerText = '❌ ไทล์นี้วางไม่ได้ ลองหมุนหรือเลือกใหม่';
+                }
             }
         }
     }
 
     // --------------------------------------------------------------
-    // Event handlers
+    // Event handler สำหรับคลิกเลือกไทล์ (ใช้ delegation)
     function handleTileClick(e) {
         if (gameOver) return;
         const tile = e.target.closest('.tile');
         if (!tile) return;
-        const player = tile.dataset.player;
-        const idx = tile.dataset.index;
-        if (player === undefined || idx === undefined) return;
+        if (!tile.dataset.index) return; // เป็น cover
 
-        const playerNum = parseInt(player, 10);
-        const tileIdx = parseInt(idx, 10);
+        const player = parseInt(tile.dataset.player, 10);
+        const idx = parseInt(tile.dataset.index, 10);
 
-        // ต้องเป็นผู้เล่นปัจจุบันเท่านั้นถึงจะเลือกได้
-        if (playerNum !== currentPlayer) {
-            alert('ตอนนี้เป็นตาของผู้เล่น ' + (currentPlayer + 1));
+        if (player !== currentPlayer) {
+            alert('ตอนนี้ไม่ใช่ตาของคุณ');
             return;
         }
 
-        if (selectedTileIndex === tileIdx) {
-            // คลิกซ้ำ: ยกเลิกการเลือก
+        if (selectedTileIndex === idx) {
             selectedTileIndex = -1;
             flipped = false;
         } else {
-            selectedTileIndex = tileIdx;
-            flipped = false;   // รีเซ็ตการหมุนเมื่อเปลี่ยนไทล์
+            selectedTileIndex = idx;
+            flipped = false;
         }
         updateUI();
-    }
-
-    function handleRotate() {
-        if (gameOver) return;
-        if (selectedTileIndex === -1) {
-            alert('กรุณาเลือกไทล์ก่อน');
-            return;
-        }
-        flipped = !flipped;
-        updateUI();
-    }
-
-    function handlePlace(position) {
-        if (gameOver) return;
-        if (selectedTileIndex === -1) {
-            alert('กรุณาเลือกไทล์ก่อน');
-            return;
-        }
-        placeTile(currentPlayer, selectedTileIndex, position, flipped);
     }
 
     function resetGame() {
-        stock = createStock();              // 36 ใบ
+        stock = createStock();
         hands = [[], [], [], []];
         for (let i = 0; i < INIT_HAND_SIZE; i++) {
             for (let p = 0; p < PLAYER_COUNT; p++) {
@@ -634,7 +734,6 @@
         selectedTileIndex = -1;
         flipped = false;
         updateUI();
-        startTurn();  // เริ่มเทิร์นแรก (ถ้ากระดานว่าง จะไม่ทำอะไร)
     }
 
     // --------------------------------------------------------------
@@ -643,12 +742,9 @@
         const container = document.getElementById('handsContainer');
         container.addEventListener('click', handleTileClick);
 
-        document.getElementById('rotateBtn').addEventListener('click', handleRotate);
-        document.getElementById('placeHeadBtn').addEventListener('click', () => handlePlace('head'));
-        document.getElementById('placeTailBtn').addEventListener('click', () => handlePlace('tail'));
         document.getElementById('resetBtn').addEventListener('click', resetGame);
 
-        resetGame(); // เริ่มเกม
+        resetGame();
     });
 })();
 </script>
